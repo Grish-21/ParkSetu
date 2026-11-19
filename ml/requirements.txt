@@ -1,0 +1,10 @@
+ultralytics
+opencv-python
+numpy
+shapely
+requests
+scikit-learn
+pandas
+fastapi
+uvicorn
+lightgbm

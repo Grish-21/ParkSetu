@@ -1,0 +1,6 @@
+.venv/
+__pycache__/
+*.py[cod]
+parksetu.db
+parksetu.db-shm
+parksetu.db-wal
