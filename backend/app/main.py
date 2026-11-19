@@ -1,8 +1,10 @@
 import asyncio
+import re
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.types import ASGIApp, Receive, Scope, Send
 
 from app.config import settings
 from app.db import Base, engine
@@ -22,6 +24,17 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="ParkSetu API", version="1.0.0", lifespan=lifespan)
+
+class NormalizePathMiddleware:
+    def __init__(self, app: ASGIApp):
+        self.app = app
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send):
+        if scope["type"] in ("http", "websocket") and "path" in scope:
+            scope["path"] = re.sub(r"/+", "/", scope["path"])
+        await self.app(scope, receive, send)
+
+app.add_middleware(NormalizePathMiddleware)
 
 # ---------------------------------------------------------------------------
 # CORS — "allow_origins=['*']" + "allow_credentials=True" is invalid per spec.
