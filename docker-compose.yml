@@ -1,0 +1,44 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: parksetu-backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - CORS_ORIGIN=http://localhost:5173,http://localhost:80,http://localhost
+      - DEMO_MODE=true
+      - JWT_SECRET=prod-change-me-secure-secret-key-12345
+      - EDGE_API_KEY=dev-edge-key
+      - DATABASE_URL=sqlite:////app/data/parksetu.db
+    volumes:
+      - parksetu-data:/app/data
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_URL=http://localhost:8000
+        - VITE_USE_MOCK=false
+    container_name: parksetu-frontend
+    restart: unless-stopped
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+
+  simulator:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: parksetu-simulator
+    restart: unless-stopped
+    command: ["sh", "-c", "sleep 5 && cd /app/ml && python -m vision.simulator --lot-id 1 --slots 1,2,3,4,5,6,7,8,9 --url http://backend:8000 --interval 3"]
+    depends_on:
+      - backend
+
+volumes:
+  parksetu-data:

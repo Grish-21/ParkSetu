@@ -1,0 +1,29 @@
+FROM python:3.12-slim
+
+WORKDIR /app
+
+# Install system dependencies (build-essential, libgomp1 for lightgbm)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY backend/requirements.txt ./backend_requirements.txt
+RUN pip install --no-cache-dir -r backend_requirements.txt lightgbm scikit-learn numpy pandas requests
+
+# Copy backend and ML code
+COPY backend ./backend
+COPY ml ./ml
+
+ENV PYTHONPATH="/app;/app/backend"
+ENV DATABASE_URL="sqlite:////app/data/parksetu.db"
+ENV CORS_ORIGIN="*"
+ENV DEMO_MODE="true"
+
+# Volume for persistent SQLite database
+VOLUME /app/data
+
+EXPOSE 8000
+
+# Entrypoint script: seed database if it doesn't exist, then start uvicorn
+CMD ["sh", "-c", "mkdir -p /app/data && if [ ! -f /app/data/parksetu.db ]; then python backend/seed.py; fi && uvicorn app.main:app --host 0.0.0.0 --port 8000 --app-dir backend"]

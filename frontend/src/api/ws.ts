@@ -6,8 +6,11 @@ type SlotUpdateCallback = (msg: SlotUpdateWsMessage) => void;
 type BookingEventCallback = (msg: BookingEventWsMessage) => void;
 
 function getWsBaseUrl(): string {
-  const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-  return apiUrl.replace(/^http/, 'ws');
+  const apiUrl = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/+$/, '');
+  if (apiUrl.startsWith('https://')) {
+    return apiUrl.replace(/^https:\/\//, 'wss://');
+  }
+  return apiUrl.replace(/^http:\/\//, 'ws://');
 }
 
 /**

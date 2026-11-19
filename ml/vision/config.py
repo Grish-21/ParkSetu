@@ -11,7 +11,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 BACKEND_URL: str = os.getenv("BACKEND_URL", "http://localhost:8000")
-EDGE_KEY: str = os.getenv("EDGE_API_KEY", "dev-edge-key")
+EDGE_KEY: str = os.getenv("EDGE_API_KEY", "e54pL6R66HzZIWsghegixR0LL_j59SFb")
 LOT_ID: int = int(os.getenv("LOT_ID", "1"))
 SOURCE: str | int | None = os.getenv("SOURCE", "0")  # video path, webcam index, or RTSP URL
 INTERVAL: float = float(os.getenv("INTERVAL", "3"))  # seconds between processed frames
