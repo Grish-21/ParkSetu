@@ -42,7 +42,10 @@ class Settings:
     jwt_expire_minutes: int = int(os.getenv("JWT_EXPIRE_MINUTES", "1440"))
     edge_api_key: str = os.getenv("EDGE_API_KEY", "e54pL6R66HzZIWsghegixR0LL_j59SFb")
     demo_mode: bool = _bool_env("DEMO_MODE", False)
-    cors_origin: str = os.getenv("CORS_ORIGIN", "*")
+    cors_origin: str = os.getenv(
+        "CORS_ORIGIN",
+        "https://park-setu.vercel.app,http://localhost:5173"
+    )
 
     @property
     def grace_minutes(self) -> int:
